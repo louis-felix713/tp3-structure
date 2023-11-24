@@ -117,7 +117,15 @@ namespace TP3
 
     double Dictionnaire::similitude(const std ::string& mot1, const std ::string& mot2)
     {
-	    return 1.0;
+        double similitude = 0.0;
+        double minLength = (mot1.length() > mot2.length()) ? mot2.length() : mot1.length();
+        double maxLength = (mot1.length() > mot2.length()) ? mot1.length() : mot2.length();
+        for(auto i = 0; i < minLength; ++i) {
+            if (mot1[i] == mot2[i]) {
+                similitude++;
+            }
+        }
+	    return similitude / maxLength;
     }
 
     std::vector<std::string> Dictionnaire::suggereCorrections(const std ::string& motMalEcrit)
@@ -191,6 +199,8 @@ namespace TP3
                 delete noeud;
                 noeud = nullptr;
                 cpt--;
+                _miseAJourHauteur(noeud);
+                _balancerNoeud(noeud);
             }
             else if (noeud->gauche != nullptr && noeud->droite != nullptr) {
                 NoeudDictionnaire* min = _min(noeud->droite);
@@ -245,6 +255,20 @@ namespace TP3
         }
     }
 
+    bool Dictionnaire::_debalancementAGauche(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
+        if(noeud == nullptr) {
+            return false;
+        }
+        return _hauteur(noeud->gauche) - _hauteur(noeud->droite) >= 2;
+    }
+
+    bool Dictionnaire::_debalancementADroite(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
+        if(noeud == nullptr) {
+            return false;
+        }
+        return _hauteur(noeud->droite) - _hauteur(noeud->gauche) >= 2;
+    }
+
     bool Dictionnaire::_sousArbrePencheAGauche(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
         if (noeud == nullptr) {
             return false;
@@ -291,6 +315,13 @@ namespace TP3
     void Dictionnaire::_zigZagDroite(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
         _zigZigGauche(noeud->droite);
         _zigZigDroite(noeud);
+    }
+
+    TP3::Dictionnaire::NoeudDictionnaire *Dictionnaire::_min(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
+        if (noeud->gauche == nullptr) {
+            return noeud;
+        }
+        return _min(noeud->gauche);
     }
   
 }//Fin du namespace
