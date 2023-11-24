@@ -117,27 +117,33 @@ namespace TP3
 
     double Dictionnaire::similitude(const std ::string& mot1, const std ::string& mot2)
     {
-        double similitude = 0.0;
         double minLength = (mot1.length() > mot2.length()) ? mot2.length() : mot1.length();
         double maxLength = (mot1.length() > mot2.length()) ? mot1.length() : mot2.length();
-        for(auto i = 0; i < minLength; ++i) {
-            if (mot1[i] == mot2[i]) {
-                similitude++;
+        double changementMot1 = mot1.length();
+        double changementMot2 = mot2.length();
+        for(auto i = 0; i < maxLength; ++i) {
+            if (minLength <= i) {
+                changementMot1--;
+                changementMot2--;
+            }
+            else if (mot1[i] != mot2[i]) {
+                changementMot1--;
+                changementMot2--;
             }
         }
-	    return similitude / maxLength;
+	    return (changementMot1 + changementMot2) / (minLength + maxLength);
     }
 
     std::vector<std::string> Dictionnaire::suggereCorrections(const std ::string& motMalEcrit)
     {
         std::vector<std::string> suggestions;
+        _suggereCorrections(racine, motMalEcrit, suggestions);
         return suggestions;
     }
 
     std::vector<std::string> Dictionnaire::traduit(const std ::string& mot)
     {
-        std::vector<std::string> traductions;
-        return traductions;
+        return _appartient(racine, mot)->traductions;
     }
 
     bool Dictionnaire::appartient(const std::string &mot)
@@ -288,7 +294,7 @@ namespace TP3
     void Dictionnaire::_zigZigGauche(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
         NoeudDictionnaire* sousNoeud = noeud->gauche;
         noeud->gauche = sousNoeud->droite;
-        noeud->droite = noeud;
+        sousNoeud->droite = noeud;
 
         _miseAJourHauteur(noeud);
         _miseAJourHauteur(sousNoeud);
@@ -304,7 +310,7 @@ namespace TP3
     void Dictionnaire::_zigZigDroite(TP3::Dictionnaire::NoeudDictionnaire *& noeud) const {
         NoeudDictionnaire* sousNoeud = noeud->droite;
         noeud->droite = sousNoeud->gauche;
-        noeud->gauche = noeud;
+        sousNoeud->gauche = noeud;
 
         _miseAJourHauteur(noeud);
         _miseAJourHauteur(sousNoeud);
@@ -322,6 +328,26 @@ namespace TP3
             return noeud;
         }
         return _min(noeud->gauche);
+    }
+
+    void Dictionnaire::_suggereCorrections(Dictionnaire::NoeudDictionnaire *& noeud, const std::string & mot, std::vector<std::string> & vec) {
+        if (noeud == nullptr) {
+            return;
+        }
+        else if(noeud->mot > mot) {
+            _suggereCorrections(noeud->gauche, mot, vec);
+        }
+        else {
+            _suggereCorrections(noeud->droite, mot, vec);
+            if (noeud->gauche != nullptr) {
+                _suggereCorrections(noeud->gauche, mot, vec);
+            }
+        }
+        if(vec.size() < 5) {
+            if(similitude(mot, noeud->mot) > 0.3) {
+                vec.push_back(noeud->mot);
+            }
+        }
     }
   
 }//Fin du namespace

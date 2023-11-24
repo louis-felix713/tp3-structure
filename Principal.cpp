@@ -71,7 +71,39 @@ int main()
 		for (vector<string>::const_iterator i = motsAnglais.begin(); i != motsAnglais.end(); i++)
 			// Itération dans les mots anglais de la phrase donnée
 		{
-			// À compléter ...
+            string mot = *i;
+			if (!dictEnFr.appartient(mot)) {
+                vector<string> similaires = dictEnFr.suggereCorrections(*i);
+                if (similaires.size() != 0) {
+                    cout << "Le mot \"" << mot << "\" n\'existe pas dans le dictionnaire. Veuillez choisir une des suggestions suivantes" << endl;
+                    for (int i = 0; i < similaires.size(); i++) {
+                        cout << i + 1 << ". " << similaires[i] << endl;
+                    }
+                    getline(cin, reponse);
+                    int rep = stoi(reponse);
+                    if (rep <= similaires.size() && rep > 0) {
+                        mot = similaires[rep - 1];
+                    }
+                }
+                else {
+                    cout << "Aucune similitude pour ce mot." << endl;
+                }
+            }
+            vector<string> traductions = dictEnFr.traduit(mot);
+            if (traductions.size() > 1) {
+                cout << "Plusieurs traductions sont possibles pour le mot \"" << mot << "\". Veuillez choisir une des suggestions suivantes" << endl;
+                for (int i = 0; i < traductions.size(); i++) {
+                    cout << i + 1 << ". " << traductions[i] << endl;
+                }
+                getline(cin, reponse);
+                int rep = stoi(reponse);
+                if (rep <= i->size() && rep > 0) {
+                    motsFrancais.push_back(traductions[rep - 1]);
+                }
+            }
+            else {
+                motsFrancais.push_back(traductions[0]);
+            }
 		}
 
 		stringstream phraseFrancais; // On crée un string contenant la phrase,

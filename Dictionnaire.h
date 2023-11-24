@@ -159,6 +159,7 @@ private:
     void _balancerNoeud(NoeudDictionnaire *&) const;
     void _miseAJourHauteur(NoeudDictionnaire *&) const;
     TP3::Dictionnaire::NoeudDictionnaire* _min(NoeudDictionnaire *&) const;
+    void _suggereCorrections(Dictionnaire::NoeudDictionnaire *&, const std::string &, std::vector<std::string> &);
 };
     
 }
