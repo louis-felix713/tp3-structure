@@ -1,7 +1,7 @@
 /**
  * \file Principal.cpp
  * \brief Fichier de chargement pour le dictionnaire, avec interface de traduction
- * \author IFT-2008, Étudiant(e)
+ * \author IFT-2008, Louis-Felix Veillette (537183048)
  * \version 0.1
  * \date décembre 2023
  *
